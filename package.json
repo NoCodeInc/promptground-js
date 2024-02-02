@@ -1,0 +1,22 @@
+{
+  "name": "promptground",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "A Node.js SDK for interacting with the PromptGround API.",
+  "main": "src/PromptGround.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NoCodeInc/promptground-js"
+  },
+  "keywords": [
+    "promptground",
+    "api",
+    "sdk"
+  ],
+  "author": "NoCode, Inc.",
+  "license": "MIT",
+  "homepage": "https://promptground.io"
+}
