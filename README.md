@@ -17,7 +17,7 @@ Here's how you can use the SDK in your Node.js application:
 ```javascript
 import PromptGround from 'promptground';
 
-const pg = new PromptGround("your_api_key_id", "your_api_secret");
+const pg = new PromptGround("YOUR API KEY");
 
 async function getPrompt() {
     try {
