@@ -1,40 +1,95 @@
+import PromptRunResult from "./models/PromptRunResult.js";
+import { ensureIsString, ensureObjectIsFlat } from "./utils/validation.js";
+
 class PromptGround {
-  constructor(apiKey, baseUrl = "https://api.promptground.io/v1") {
+  constructor(apiKey, baseUrl = "https://api.promptground.io/v2") {
     this.apiKey = apiKey;
     this.baseUrl = baseUrl;
+    this.context = {
+      sdk: "javascript",
+      "sdk-version": "1.0.0",
+    };
   }
 
-  async prompt(alias, data = {}, defaultResponse = null, version = null) {
-    const url = `${this.baseUrl}/prompt`;
-    let body = {
+  async messages(alias, data = {}, version = null) {
+    ensureIsString(alias, "alias");
+
+    const url = `${this.baseUrl}/prompt/messages`;
+    const headers = {
+      Authorization: `Bearer ${this.apiKey}`,
+      "Content-Type": "application/json",
+    };
+    const payload = {
       alias: alias,
       data: data,
     };
 
     if (version) {
-      body["version"] = version;
+      payload.version = version;
     }
 
     try {
       const response = await fetch(url, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${this.apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
+        headers: headers,
+        body: JSON.stringify(payload),
       });
       const result = await response.json();
       if (response.ok && result.success) {
-        return result.data.prompt || "";
+        return result.data.messages || [];
       } else {
-        if (defaultResponse !== null) {
-          return defaultResponse;
-        }
-        throw new Error(result.message || "Error fetching prompt");
+        throw new Error(result.message || "Error fetching messages");
       }
     } catch (error) {
-      console.error("PromptError:", error.message);
+      console.error("PromptError:", error.message, {
+        url,
+        payload,
+      });
+      throw error;
+    }
+  }
+
+  async run(alias, data = {}, metadata = {}, labels = [], version = null) {
+    ensureIsString(alias, "alias");
+    ensureObjectIsFlat(data, "data");
+    ensureObjectIsFlat(metadata, "metadata");
+    ensureObjectIsFlat(labels, "labels");
+
+    const url = `${this.baseUrl}/prompt/run`;
+    const headers = {
+      Authorization: `Bearer ${this.apiKey}`,
+      "Content-Type": "application/json",
+    };
+    const payload = {
+      alias: alias,
+      data: data,
+      metadata: metadata,
+      labels: labels,
+      context: this.context,
+    };
+
+    if (version) {
+      payload.version = version;
+    }
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json();
+      if (response.ok && result.success) {
+        const data = result.data || {};
+        return new PromptRunResult(data.result || "", data.usage || {});
+      } else {
+        throw new Error(result.message || "Error running prompt");
+      }
+    } catch (error) {
+      console.error("PromptError:", error.message, {
+        url,
+        payload,
+      });
       throw error;
     }
   }
