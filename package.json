@@ -1,6 +1,6 @@
 {
   "name": "promptground",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "description": "A Node.js SDK for interacting with the PromptGround API.",
   "main": "src/PromptGround.js",
