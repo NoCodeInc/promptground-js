@@ -7,7 +7,7 @@ class PromptGround {
     this.baseUrl = baseUrl;
     this.context = {
       sdk: "javascript",
-      "sdk-version": "1.0.0",
+      "sdk-version": "1.1.0",
     };
   }
 
@@ -49,7 +49,7 @@ class PromptGround {
     }
   }
 
-  async run(alias, data = {}, metadata = {}, labels = [], version = null) {
+  async run(alias, data = {}, metadata = {}, labels = [], model = null, version = null) {
     ensureIsString(alias, "alias");
     ensureObjectIsFlat(data, "data");
     ensureObjectIsFlat(metadata, "metadata");
@@ -70,6 +70,10 @@ class PromptGround {
 
     if (version) {
       payload.version = version;
+    }
+
+    if (model) {
+      payload.model = model;
     }
 
     try {
